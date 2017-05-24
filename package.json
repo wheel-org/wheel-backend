@@ -1,0 +1,20 @@
+{
+  "name": "wheel",
+  "version": "1.0.0",
+  "description": "Expenses tracking app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wheel-org/wheel-backend.git"
+  },
+  "bugs": "https://github.com/wheel-org/wheel-backend/issues",
+  "dependencies": {
+    "body-parser": "*",
+    "express": "*",
+    "firebase-admin": "*"
+  },
+  "private": true,
+  "main": ".index.js",
+  "scripts": {
+    "start": "node index.js"
+  }
+}
