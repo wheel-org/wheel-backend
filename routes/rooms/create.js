@@ -40,7 +40,10 @@ router.post('/', function(req, res, next) {
             transactions: []
         };
 
-        res.send(roomObject);
+        res.send({
+            success: true,
+            data: roomObject
+        });
     });
 
 });

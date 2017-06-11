@@ -10,7 +10,7 @@ var FirebaseStore = require('connect-session-firebase')(expressSession);
 var passport = require("passport");
 
 app.use(expressSession({
-    secret: "dankmemes",
+    secret: process.env.fb_secret,
     resave: true,
     saveUninitialized: true,
     store: new FirebaseStore({
@@ -29,14 +29,14 @@ app.use(bodyParser.urlencoded({
 app.get('/*', function(req, res, next) {
     console.log('GET ' + req.url);
     res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Origin', req.headers.origin);
     next();
 });
 
 app.post('/*', function(req, res, next) {
     console.log('POST ' + req.url);
     res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Origin', req.headers.origin);
     next();
 });
 
@@ -55,7 +55,10 @@ app.get('/', function(req, res) {
 
 app.use(function(err, req, res, next) {
     console.log(err);
-    res.send("Error: " + err.message);
+    res.send({
+        success: false,
+        data: err
+    });
 });
 
 var port = process.env.PORT || 5000;

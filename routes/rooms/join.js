@@ -11,18 +11,27 @@ router.post('/', function(req, res, next) {
 
     firebase.ref("rooms/" + query.id).once("value", function(snap) {
         var data = snap.val();
+
+        // Room doesn't exist
         if(data === undefined || data === null) {
             console.log("Room not found");
             return res.send("Room not found");
         }
+
+        // User already in room
+        if(data.usernames.indexOf(req.user.username) > -1) {
+            console.log("User is already in room");
+            return res.send("User is already in room");
+        };
+
+        // Password incorrect
         if(!bcrypt.compareSync(query.password, data.password)) {
             console.log("Incorrect password");
             return res.send("Incorrect password");
         }
 
-        var newUsernames = data.usernames;
-        newUsernames.push(req.user.username);
-        firebase.ref("rooms/" + query.id + "/users/").set(newUsernames);
+        data.usernames.push(req.user.usernames);
+        firebase.ref("rooms/" + query.id + "/users/").set(data.usernames);
 
         // Add room to user
         firebase.ref("users/" + req.user.username + "/rooms/" + query.id + "/").update({
@@ -31,7 +40,10 @@ router.post('/', function(req, res, next) {
             balance: 0
         });
 
-        res.send("Success");
+        res.send({
+            success: true,
+            data: data
+        });
     });
 });
 

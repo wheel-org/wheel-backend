@@ -1,10 +1,5 @@
 var getBtn = document.getElementById('get-btn');
 
-var postBtn = document.getElementById('post-btn');
-var personInput = document.getElementById('person');
-var amountInput = document.getElementById('amount');
-var descInput = document.getElementById('desc');
-
 var delBtn = document.getElementById('del-btn');
 var idInput = document.getElementById('id');
 
@@ -23,6 +18,11 @@ var roomIDInput = document.getElementById('room-id');
 var roomNameInput = document.getElementById('room-name');
 var roomPwInput = document.getElementById('room-pw');
 
+var postBtn = document.getElementById('post-btn');
+var transID = document.getElementById('trans-id');
+var amountInput = document.getElementById('amount');
+var descInput = document.getElementById('desc');
+
 var authBtn = document.getElementById('auth-btn');
 var logoutBtn = document.getElementById('logout-btn');
 
@@ -36,7 +36,7 @@ function sendRequest(type, url, params, callback){
             callback(xhr.responseText);
         }
     }
-    xhr.open(type, 'http://localhost:5000' + url, true);
+    xhr.open(type, 'https://wheel-app.herokuapp.com' + url, true);
     xhr.withCredentials = true;
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.send(params);
@@ -58,26 +58,16 @@ getBtn.addEventListener('click', function() {
     });
 });
 
-function valid(pIn, aIn, dIn){
-    return pIn !== '' ||
-           aIn !== '' ||
-           dIn !== '';
-}
-
 postBtn.addEventListener('click', function() {
-    var pIn = personInput.value,
-        aIn = amountInput.value,
-        dIn = descInput.value;
-    if(!valid(pIn, aIn, dIn)) {
-        resText.innerText = "Inputs not valid";
-        return;
-    };
+    var id = transID.value,
+        amount = amountInput.value,
+        desc = descInput.value;
 
-    var params = 'person=' + pIn +
-                 '&amount=' + aIn +
-                 '&desc=' + dIn;
+    var params = 'id=' + id +
+                 '&amount=' + amount +
+                 '&desc=' + desc;
 
-    sendRequest('POST', '/add', params, function(res) {
+    sendRequest('POST', '/rooms/add', params, function(res) {
         resText.innerText = res;
     });
 });

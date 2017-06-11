@@ -9,11 +9,12 @@ module.exports = function(passport) {
         function(req, username, password, done) {
             var name = req.body.name;
 
-            console.log("Registering: " + name + ", " + username + ", " + password);
+            console.log("Registering: " + username + ", " + password + ", " + name);
 
             firebase.ref("usernames/" + username).once("value", function(snap) {
                 var data = snap.val();
 
+                // User with username already exists
                 if(data !== undefined && data !== null) {
                     return done(null, false, {message: "Username already taken"});
                 }
@@ -34,6 +35,7 @@ module.exports = function(passport) {
                 firebase.ref("users").update(newUser);
 
                 console.log("Success");
+
                 // Send User object
                 return done(null, {
                     username: username,
