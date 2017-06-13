@@ -28,14 +28,27 @@ module.exports = function(passport) {
                 firebase.ref("users/" + username).once("value", function(snap) {
                     var name = snap.val().name;
                     var rooms = snap.val().rooms;
-                    if(rooms === undefined) rooms = []; //empty room array
+
+                    var roomInfo = [];
+
+                    if(rooms !== undefined) {
+                        for(var roomid in rooms) {
+                            if(rooms.hasOwnProperty(roomid)) {
+                                roomInfo.push({
+                                    id: roomid,
+                                    name: rooms[roomid].name,
+                                    balance: rooms[roomid].balance
+                                })
+                            }
+                        }
+                    }
 
                     console.log("Success");
                     // Send User object
                     var userObject = {
                         username: username,
                         name: name,
-                        rooms: rooms
+                        rooms: roomInfo
                     };
                     return done(null, userObject);
 

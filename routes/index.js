@@ -10,15 +10,33 @@ module.exports = function(passport) {
 
     router.get('/auth', function(req, res, next) {
         if(req.isAuthenticated()) {
+            var roomInfo = [];
+
+            if(req.user.rooms !== undefined) {
+                for(var roomid in req.user.rooms) {
+                    if(req.user.rooms.hasOwnProperty(roomid)) {
+                        roomInfo.push({
+                            id: roomid,
+                            name: req.user.rooms[roomid].name,
+                            balance: req.user.rooms[roomid].balance
+                        })
+                    }
+                }
+            }
+            
             res.send({
                 success: true,
-                data: "yes: " + req.user.username
+                data: {
+                    username: req.user.username,
+                    name: req.user.name,
+                    rooms: roomInfo
+                }
             });
         }
         else {
             res.send({
                 success: false,
-                data: "no"
+                data: "Not authorized"
             });
         }
     });
