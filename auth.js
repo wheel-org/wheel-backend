@@ -1,25 +1,23 @@
-var router = require('express').Router();
-var firebase = require("../firebase").database();
+var firebase = require('./firebase').database();
 var bcrypt = require("bcryptjs");
 
-router.post('/', function(req, res, next) {
-    console.log('Logging in');
+var isAuth = function (req, res, next) {
+    console.log("Checking auth");
     console.log(req.body);
+    if(req.body.username === null || req.body.username === '' ||
+       req.body.password === null || req.body.password === '') {
+       console.log('Missing credentials');
+        return res.send({
+            success: false,
+            error: 1
+        });
+    }
     var query = {
         username: req.body.username,
         password: req.body.password
     };
-    if(query.username === '' || query.password === '') {
-        console.log('Missing credentials');
-        return res.send({
-            success: false,
-            data: 1
-        });
-    }
-
-    firebase.ref('usernames/' + query.username).once('value', function(snap) {
+    firebase.ref('usernames/' + query.username).once('value', function (snap) {
         var data = snap.val();
-
         if(data === undefined || data === null) {
             console.log('Username not found');
             return res.send({
@@ -52,17 +50,12 @@ router.post('/', function(req, res, next) {
                 }
             }
 
-            console.log("Success");
-            // Send User object
-            var userObject = {
+            req.user = {
                 username: query.username,
                 name: name,
                 rooms: roomInfo
             };
-            res.send({
-                success: true,
-                data: userObject
-            });
+            next();
         }, function(error) {
             console.log(error);
             res.send({
@@ -70,13 +63,13 @@ router.post('/', function(req, res, next) {
                 data: 0
             });
         });
-    }, function(error) {
+    }, function (error) {
         console.log(error);
         res.send({
             success: false,
             data: 0
         });
     });
-});
+};
 
-module.exports = router;
+module.exports = isAuth;

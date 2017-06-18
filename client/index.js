@@ -1,19 +1,14 @@
-var getBtn = document.getElementById('get-btn');
-
-var delBtn = document.getElementById('del-btn');
-var idInput = document.getElementById('id');
+var userInput = document.getElementById('user');
+var passInput = document.getElementById('pass');
 
 var regBtn = document.getElementById('reg-btn');
 var regNameInput = document.getElementById('reg-name');
-var regUserInput = document.getElementById('reg-user');
-var regPwInput = document.getElementById('reg-pw');
 
 var loginBtn = document.getElementById('login-btn');
-var loginUserInput = document.getElementById('login-user');
-var loginPwInput = document.getElementById('login-pw');
 
 var createBtn = document.getElementById('create-btn');
 var joinBtn = document.getElementById('join-btn');
+var getBtn = document.getElementById('get-btn');
 var roomIDInput = document.getElementById('room-id');
 var roomNameInput = document.getElementById('room-name');
 var roomPwInput = document.getElementById('room-pw');
@@ -30,6 +25,10 @@ var resText = document.getElementById('res-text');
 
 function sendRequest(type, url, params, callback){
     console.log(type);
+    if (params !== '') params += '&';
+    params += 'username=' + userInput.value +
+              '&password=' + passInput.value;
+    console.log(params);
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
         if(xhr.readyState === 4 && xhr.status === 200){
@@ -43,20 +42,6 @@ function sendRequest(type, url, params, callback){
     resText.innerText = 'Waiting...';
 }
 
-getBtn.addEventListener('click', function() {
-    sendRequest('GET', '/get', null, function(res) {
-        console.log(res);
-        try {
-            var data = JSON.parse(res);
-            resText.innerText = 'Count: ' + data[0] + '\n';
-            for(var i = 1; i < data.length; i++){
-                resText.innerText += '#' + i + ': ' + data[i] + '\n';
-            }
-        } catch(err) {
-            resText.innerText = res;
-        }
-    });
-});
 
 postBtn.addEventListener('click', function() {
     var id = transID.value,
@@ -72,21 +57,9 @@ postBtn.addEventListener('click', function() {
     });
 });
 
-delBtn.addEventListener('click', function() {
-    var params = 'id=' + idInput.value;
-
-    sendRequest('DELETE', '', params, function(res) {
-        resText.innerText = res;
-    });
-});
-
 regBtn.addEventListener('click', function() {
     var name = regNameInput.value;
-    var user = regUserInput.value;
-    var pw = regPwInput.value;
-    var params = 'name=' + name +
-                 '&username=' + user +
-                 '&password=' + pw;
+    var params = 'name=' + name;
 
     sendRequest('POST', '/register', params, function(res) {
         resText.innerText = res;
@@ -94,12 +67,7 @@ regBtn.addEventListener('click', function() {
 });
 
 loginBtn.addEventListener('click', function() {
-    var username = loginUserInput.value;
-    var password = loginPwInput.value;
-    var params = 'username=' + username +
-                 '&password=' + password;
-
-    sendRequest('POST', '/login', params, function(res) {
+    sendRequest('POST', '/login', '', function(res) {
         resText.innerText = res;
     });
 });
@@ -110,7 +78,7 @@ createBtn.addEventListener('click', function() {
     var pw = roomPwInput.value;
     var params = 'id=' + id +
                  '&name=' + name +
-                 '&password=' + pw;
+                 '&roomPassword=' + pw;
 
     sendRequest('POST', '/rooms/create', params, function(res) {
         resText.innerText = res;
@@ -121,21 +89,30 @@ joinBtn.addEventListener('click', function() {
     var id = roomIDInput.value;
     var pw = roomPwInput.value;
     var params = 'id=' + id +
-                 '&password=' + pw;
+                 '&roomPassword=' + pw;
 
     sendRequest('POST', '/rooms/join', params, function(res) {
         resText.innerText = res;
     });
 });
 
+getBtn.addEventListener('click', function() {
+    var id = roomIDInput.value;
+    var params = 'id=' + id;
+
+    sendRequest('POST', '/rooms/get', params, function(res) {
+        resText.innerText = res;
+    });
+});
+
 authBtn.addEventListener('click', function() {
-    sendRequest('GET', '/auth', null, function(res) {
+    sendRequest('POST', '/auth', '', function(res) {
         resText.innerText = res;
     });
 });
 
 logoutBtn.addEventListener('click', function() {
-    sendRequest('GET', '/logout', null, function(res) {
+    sendRequest('GET', '/logout', '', function(res) {
         resText.innerText = res;
     });
 });

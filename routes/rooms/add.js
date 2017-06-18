@@ -4,7 +4,7 @@ var bcrypt = require("bcryptjs");
 
 router.post('/', function(req, res, next) {
     console.log("Adding transaction");
-
+    console.log(req.body);
     var query = {
         id: req.body.id,
         amount: req.body.amount,
@@ -16,14 +16,20 @@ router.post('/', function(req, res, next) {
         var data = snap.val();
         console.log(data);
         if(data === undefined || data === null) {
-            console.log("Room not found");
-            return res.send("Room not found");
+            console.log('Room not found');
+            return res.send({
+                success: false,
+                data: 6
+            });
         }
 
         // Check if user is in room
         if(data.usernames.indexOf(req.user.username) === -1) {
-            console.log("User not in room");
-            return res.send("User not in room");
+            console.log('User not in room');
+            return res.send({
+                success: false,
+                data: 4
+            });
         }
 
         // Add transaction to room
@@ -48,7 +54,7 @@ router.post('/', function(req, res, next) {
 
             res.send({
                 success: true,
-                data: "Success"
+                data: newTransaction
             });
         });
     });

@@ -3,17 +3,16 @@ var firebase = require("../../firebase").database();
 var bcrypt = require("bcryptjs");
 
 router.post('/', function(req, res, next) {
-    console.log("Joining room");
+    console.log("Getting room");
     console.log(req.body);
     var query = {
-        id: req.body.id,
-        password: req.body.roomPassword
+        id: req.body.id
     };
 
+    // Check if room with ID exists
     firebase.ref("rooms/" + query.id).once("value", function(snap) {
         var data = snap.val();
-
-        // Room doesn't exist
+        console.log(data);
         if(data === undefined || data === null) {
             console.log('Room not found');
             return res.send({
@@ -22,33 +21,14 @@ router.post('/', function(req, res, next) {
             });
         }
 
-        // User already in room
-        if(data.usernames.indexOf(req.user.username) > -1) {
-            console.log('User is already in room');
+        // Check if user is in room
+        if(data.usernames.indexOf(req.user.username) === -1) {
+            console.log('User not in room');
             return res.send({
                 success: false,
-                data: 8
-            });
-        };
-
-        // Password incorrect
-        if(!bcrypt.compareSync(query.password, data.password)) {
-            console.log('Incorrect password');
-            return res.send({
-                success: false,
-                data: 5
+                data: 4
             });
         }
-
-        data.usernames.push(req.user.username);
-        firebase.ref("rooms/" + query.id + "/usernames/").set(data.usernames);
-
-        // Add room to user
-        firebase.ref("users/" + req.user.username + "/rooms/" + query.id + "/").update({
-            name: data.name,
-            balance: 0
-        });
-
         res.send({
             success: true,
             data: {
@@ -59,10 +39,9 @@ router.post('/', function(req, res, next) {
             }
         });
     }, function (error) {
-        console.log(error);
         res.send({
             success: false,
-            data: 0
+            data: error
         });
     });
 });

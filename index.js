@@ -3,23 +3,8 @@ var app         = express();
 var compression = require("compression");
 var bodyParser  = require('body-parser');
 var path        = require("path");
+var auth        = require('./auth');
 
-var expressSession = require("express-session");
-var firebase = require("./firebase");
-var FirebaseStore = require('connect-session-firebase')(expressSession);
-var passport = require("passport");
-
-app.use(expressSession({
-    secret: process.env.fb_secret,
-    resave: true,
-    saveUninitialized: true,
-    store: new FirebaseStore({
-        database: firebase.database()
-    })
-}));
-require("./passport/init")(passport);
-app.use(passport.initialize());
-app.use(passport.session());
 app.use(compression());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
@@ -45,7 +30,7 @@ app.options('/*', function(req, res, next) {
     next();
 });
 
-app.use('/', require('./routes')(passport));
+app.use('/', require('./routes'));
 
 app.use(express.static(__dirname + '/client'));
 app.get('/', function(req, res) {
@@ -57,7 +42,7 @@ app.use(function(err, req, res, next) {
     console.log(err);
     res.send({
         success: false,
-        data: err
+        data: 0
     });
 });
 

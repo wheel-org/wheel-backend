@@ -11,11 +11,7 @@
         "body-parser": "*",
         "compression": "*",
         "express": "*",
-        "express-session": "*",
         "firebase-admin": "*",
-        "connect-session-firebase": "*",
-        "passport": "*",
-        "passport-local": "*",
         "bcryptjs": "*"
     },
     "private": true,

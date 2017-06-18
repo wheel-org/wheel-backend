@@ -1,34 +1,59 @@
 var router = require("express").Router();
+var firebase = require("../firebase").database();
+var bcrypt = require("bcryptjs");
 
-module.exports = function(passport) {
-    router.post('/', function(req, res, next) {
-        passport.authenticate("register", function(err, user, info) {
-            if(err) {
-                return res.send({
-                    success: false,
-                    data: err
-                });
-            }
-            if(!user) {
-                return res.send({
-                    success: false,
-                    data: info.message
-                });
-            }
+router.post('/', function (req, res, next) {
+    console.log("Registering user");
+    console.log(req.body);
+    var query = {
+        username: req.body.username,
+        password: req.body.password,
+        name: req.body.name
+    };
 
-            req.logIn(user, function() {
-                console.log("register success");
-                res.send({
-                    success: true,
-                    data: user
-                });
+    firebase.ref('usernames/' + query.username).once('value', function (snap) {
+        var data = snap.val();
+        // User with username already exists
+        if(data !== undefined && data !== null) {
+            console.log('Username already taken');
+            return res.send({
+                success: false,
+                data: 3
             });
-        })(req, res, next);
-    });
+        }
 
-    /*router.post('/', passport.authenticate('register'), function(req, res, next) {
-        console.log(req.isAuthenticated());
-        res.send(req.user);
-    });*/
-    return router;
-}
+        var hashPw = bcrypt.hashSync(query.password);
+
+        var newUsername = {};
+        newUsername[query.username] = {
+            password: hashPw
+        };
+        firebase.ref("usernames").update(newUsername);
+
+        var newUser = {};
+        newUser[query.username] = {
+            name: query.name,
+            rooms: []
+        };
+        firebase.ref("users").update(newUser);
+
+        console.log("Success");
+
+        res.send({
+            success: true,
+            data: {
+                username: query.username,
+                name: query.name,
+                rooms: []
+            }
+        });
+    }, function (error) {
+        console.log(error);
+        res.send({
+            success: false,
+            data: 0
+        });
+    });
+});
+
+module.exports = router;
