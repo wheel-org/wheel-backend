@@ -6,10 +6,10 @@ var isAuth = function (req, res, next) {
     console.log(req.body);
     if(req.body.username === null || req.body.username === '' ||
        req.body.password === null || req.body.password === '') {
-       console.log('Missing credentials');
-        return res.send({
-            success: false,
-            error: 1
+
+        return next({
+            code: 1,
+            msg: 'Missing credentials'
         });
     }
     var query = {
@@ -19,19 +19,19 @@ var isAuth = function (req, res, next) {
     firebase.ref('usernames/' + query.username).once('value', function (snap) {
         var data = snap.val();
         if(data === undefined || data === null) {
-            console.log('Username not found');
-            return res.send({
-                success: false,
-                data: 2
+            return next({
+                code: 2,
+                msg: 'Username not found'
             });
         }
+
         if(!bcrypt.compareSync(query.password, data.password)) {
-            console.log('Incorrect password');
-            return res.send({
-                success: false,
-                data: 2
+            return next({
+                code: 2,
+                msg: 'Incorrect password'
             });
         }
+
         firebase.ref('users/' + query.username).once('value', function(snap) {
             var name = snap.val().name;
             var rooms = snap.val().rooms;
@@ -57,17 +57,15 @@ var isAuth = function (req, res, next) {
             };
             next();
         }, function(error) {
-            console.log(error);
-            res.send({
-                success: false,
-                data: 0
+            next({
+                code: 0,
+                msg: error
             });
         });
     }, function (error) {
-        console.log(error);
-        res.send({
-            success: false,
-            data: 0
+        next({
+            code: 0,
+            msg: error
         });
     });
 };

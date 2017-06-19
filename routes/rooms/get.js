@@ -14,34 +14,67 @@ router.post('/', function(req, res, next) {
         var data = snap.val();
         console.log(data);
         if(data === undefined || data === null) {
-            console.log('Room not found');
-            return res.send({
-                success: false,
-                data: 6
+            return next({
+                code: 6,
+                msg: 'Room not found'
             });
         }
 
         // Check if user is in room
         if(data.usernames.indexOf(req.user.username) === -1) {
-            console.log('User not in room');
-            return res.send({
-                success: false,
-                data: 4
+            return next({
+                code: 4,
+                msg: 'User not in room'
             });
         }
-        res.send({
-            success: true,
-            data: {
-                name: data.name,
-                id: data.id,
-                users: data.usernames,
-                transactions: data.transactions
+
+        // Get list of transactions
+        var transData = [];
+        if(data.transactions !== undefined) {
+            for(var id in data.transactions) {
+                if(data.transactions.hasOwnProperty(id)) {
+                    data.transactions[id].id = id;
+                    transData.push(data.transactions[id]);
+                }
             }
-        });
+        }
+
+        // Get user data (username - amount)
+        // very hacky, change later
+        var userData = [];
+        var done = 0;
+        for(var i = 0; i < data.usernames.length; ++i) {
+            (function (i){
+                firebase.ref('users/' + data.usernames[i]).once('value', function (snap) {
+                    var balance = snap.val().rooms[query.id].balance;
+                    userData.push({
+                        user: data.usernames[i],
+                        balance: balance
+                    });
+                    done++;
+                    if(done >= data.usernames.length) {
+                        res.send({
+                            success: true,
+                            data: {
+                                name: data.name,
+                                id: data.id,
+                                users: userData,
+                                transactions: transData
+                            }
+                        });
+                    }
+                }, function (error) {
+                    return next({
+                        code: 0,
+                        msg: error
+                    });
+                });
+            })(i);
+        }
     }, function (error) {
-        res.send({
-            success: false,
-            data: error
+        next({
+            code: 0,
+            msg: error
         });
     });
 });

@@ -15,10 +15,9 @@ router.post('/', function (req, res, next) {
         var data = snap.val();
         // User with username already exists
         if(data !== undefined && data !== null) {
-            console.log('Username already taken');
-            return res.send({
-                success: false,
-                data: 3
+            return next({
+                code: 3,
+                msg: 'Username already taken'
             });
         }
 
@@ -48,10 +47,9 @@ router.post('/', function (req, res, next) {
             }
         });
     }, function (error) {
-        console.log(error);
-        res.send({
-            success: false,
-            data: 0
+        next({
+            code: 0,
+            msg: error
         });
     });
 });

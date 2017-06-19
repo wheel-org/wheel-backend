@@ -39,10 +39,10 @@ app.get('/', function(req, res) {
 });
 
 app.use(function(err, req, res, next) {
-    console.log(err);
+    console.log(err.msg);
     res.send({
         success: false,
-        data: 0
+        data: err.code
     });
 });
 

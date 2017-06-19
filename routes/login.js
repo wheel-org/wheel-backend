@@ -10,10 +10,9 @@ router.post('/', function(req, res, next) {
         password: req.body.password
     };
     if(query.username === '' || query.password === '') {
-        console.log('Missing credentials');
-        return res.send({
-            success: false,
-            data: 1
+        return next({
+            code: 1,
+            msg: 'Missing credentials'
         });
     }
 
@@ -21,19 +20,19 @@ router.post('/', function(req, res, next) {
         var data = snap.val();
 
         if(data === undefined || data === null) {
-            console.log('Username not found');
-            return res.send({
-                success: false,
-                data: 2
+            return next({
+                code: 2,
+                msg: 'Username not found'
             });
         }
+
         if(!bcrypt.compareSync(query.password, data.password)) {
-            console.log('Incorrect password');
-            return res.send({
-                success: false,
-                data: 2
+            return next({
+                code: 2,
+                msg: 'Incorrect password'
             });
         }
+
         firebase.ref('users/' + query.username).once('value', function(snap) {
             var name = snap.val().name;
             var rooms = snap.val().rooms;
@@ -64,17 +63,15 @@ router.post('/', function(req, res, next) {
                 data: userObject
             });
         }, function(error) {
-            console.log(error);
-            res.send({
-                success: false,
-                data: 0
+            next({
+                code: 0,
+                msg: error
             });
         });
     }, function(error) {
-        console.log(error);
-        res.send({
-            success: false,
-            data: 0
+        next({
+            code: 0,
+            msg: error
         });
     });
 });

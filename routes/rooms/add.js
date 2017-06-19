@@ -16,19 +16,17 @@ router.post('/', function(req, res, next) {
         var data = snap.val();
         console.log(data);
         if(data === undefined || data === null) {
-            console.log('Room not found');
-            return res.send({
-                success: false,
-                data: 6
+            return next({
+                code: 6,
+                msg: 'Room not found'
             });
         }
 
         // Check if user is in room
         if(data.usernames.indexOf(req.user.username) === -1) {
-            console.log('User not in room');
-            return res.send({
-                success: false,
-                data: 4
+            return next({
+                code: 4,
+                msg: 'User not in room'
             });
         }
 

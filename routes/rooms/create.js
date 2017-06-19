@@ -1,40 +1,44 @@
-var router = require("express").Router();
-var firebase = require("../../firebase").database();
-var bcrypt = require("bcryptjs");
+var router = require('express').Router();
+var firebase = require('../../firebase').database();
+var bcrypt = require('bcryptjs');
+
+var createID = function (callback, error) {
+    var id = Math.floor(Math.random() * 1000);
+    firebase.ref('rooms/' + id).once('value', function (snap) {
+        var data = snap.val();
+        if(data !== undefined && data !== null) {
+            // Room exist, pick another room
+            createId(callback, error);
+        }
+        else {
+            callback (id);
+        }
+    }, error);
+}
 
 router.post('/', function(req, res, next) {
-    console.log("Creating room");
+    console.log('Creating room');
     console.log(req.body);
 
     var query = {
-        id: req.body.id,
         name: req.body.name,
         password: req.body.roomPassword
     };
 
-    firebase.ref("rooms/" + query.id).once("value", function(snap) {
-        var data = snap.val();
-        if(data !== undefined && data !== null) {
-            console.log('Room ID already taken');
-            return res.send({
-                success: false,
-                data: 7
-            });
-        }
-        console.log(query);
+    createID(function (roomid) {
+        console.log(roomid);
         var hashPw = bcrypt.hashSync(query.password);
-        console.log(hashPw);
         var newRoom = {};
-        newRoom[query.id] = {
+        newRoom[roomid] = {
             name: query.name,
             password: hashPw,
             usernames: [req.user.username],
             transactions: []
         };
-        firebase.ref("rooms/").update(newRoom);
+        firebase.ref('rooms/').update(newRoom);
 
         // Add room to user
-        firebase.ref("users/" + req.user.username + "/rooms/" + query.id + "/").update({
+        firebase.ref('users/' + req.user.username + '/rooms/' + roomid + '/').update({
             name: query.name,
             balance: 0
         });
@@ -49,8 +53,12 @@ router.post('/', function(req, res, next) {
             success: true,
             data: roomObject
         });
+    }, function (error) {
+        next({
+            code: 0,
+            msg: error
+        });
     });
-
 });
 
 module.exports = router;

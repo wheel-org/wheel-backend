@@ -15,28 +15,25 @@ router.post('/', function(req, res, next) {
 
         // Room doesn't exist
         if(data === undefined || data === null) {
-            console.log('Room not found');
-            return res.send({
-                success: false,
-                data: 6
+            return next({
+                code: 6,
+                msg: 'Room not found'
             });
         }
 
         // User already in room
         if(data.usernames.indexOf(req.user.username) > -1) {
-            console.log('User is already in room');
-            return res.send({
-                success: false,
-                data: 8
+            return next({
+                code: 8,
+                msg: 'User is already in room'
             });
         };
 
         // Password incorrect
         if(!bcrypt.compareSync(query.password, data.password)) {
-            console.log('Incorrect password');
-            return res.send({
-                success: false,
-                data: 5
+            return next({
+                code: 5,
+                msg: 'Incorrect room password'
             });
         }
 
@@ -49,20 +46,49 @@ router.post('/', function(req, res, next) {
             balance: 0
         });
 
-        res.send({
-            success: true,
-            data: {
-                name: data.name,
-                id: data.id,
-                users: data.usernames,
-                transactions: data.transactions
+        // Get list of transactions
+        var transData = [];
+        if(data.transactions !== undefined) {
+            for(var id in data.transactions) {
+                if(data.transactions.hasOwnProperty(id)) {
+                    data.transactions[id].id = id;
+                    transData.push(data.transactions[id]);
+                }
             }
-        });
+        }
+
+        var userData = [];
+        var done = 0;
+        for(var i = 0; i < data.usernames.length; ++i) {
+            firebase.ref('users/' + data.usernames[i]).once('value', function (snap) {
+                var balance = snap.val().rooms[room.id].balance;
+                userData.push({
+                    user: data.usernames[i],
+                    balance: balance
+                });
+                done++;
+                if(done >= data.usernames.length) {
+                    res.send({
+                        success: true,
+                        data: {
+                            name: data.name,
+                            id: data.id,
+                            users: userData,
+                            transactions: transData
+                        }
+                    });
+                }
+            }, function (error) {
+                return next({
+                    code: 0,
+                    msg: error
+                });
+            });
+        }
     }, function (error) {
-        console.log(error);
-        res.send({
-            success: false,
-            data: 0
+        next({
+            code: 0,
+            msg: error
         });
     });
 });

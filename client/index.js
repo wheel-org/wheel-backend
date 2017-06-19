@@ -73,11 +73,9 @@ loginBtn.addEventListener('click', function() {
 });
 
 createBtn.addEventListener('click', function() {
-    var id = roomIDInput.value;
     var name = roomNameInput.value;
     var pw = roomPwInput.value;
-    var params = 'id=' + id +
-                 '&name=' + name +
+    var params = 'name=' + name +
                  '&roomPassword=' + pw;
 
     sendRequest('POST', '/rooms/create', params, function(res) {
