@@ -72,7 +72,7 @@ router.post('/', function(req, res, next) {
                         success: true,
                         data: {
                             name: data.name,
-                            id: data.id,
+                            id: query.id,
                             users: userData,
                             transactions: transData
                         }

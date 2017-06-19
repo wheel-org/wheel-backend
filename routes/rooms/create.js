@@ -45,6 +45,7 @@ router.post('/', function(req, res, next) {
 
         var roomObject = {
             name: query.name,
+            id: roomid,
             usernames: [req.user.username],
             transactions: []
         };
