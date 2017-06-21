@@ -52,7 +52,7 @@ postBtn.addEventListener('click', function() {
                  '&amount=' + amount +
                  '&desc=' + desc;
 
-    sendRequest('POST', '/rooms/add', params, function(res) {
+    sendRequest('POST', '/transactions/add', params, function(res) {
         resText.innerText = res;
     });
 });

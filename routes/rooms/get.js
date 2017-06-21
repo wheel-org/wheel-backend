@@ -29,12 +29,12 @@ router.post('/', function(req, res, next) {
         }
 
         // Get list of transactions
-        var transData = [];
+        var transactionData = [];
         if(data.transactions !== undefined) {
             for(var id in data.transactions) {
                 if(data.transactions.hasOwnProperty(id)) {
                     data.transactions[id].id = id;
-                    transData.push(data.transactions[id]);
+                    transactionData.push(data.transactions[id]);
                 }
             }
         }
@@ -59,7 +59,7 @@ router.post('/', function(req, res, next) {
                                 name: data.name,
                                 id: query.id,
                                 users: userData,
-                                transactions: transData
+                                transactions: transactionData
                             }
                         });
                     }
