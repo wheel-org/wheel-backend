@@ -12,6 +12,7 @@ router.post('/', function(req, res, next) {
 
     firebase.ref("rooms/" + query.id).once("value", function(snap) {
         var data = snap.val();
+        console.log(data);
 
         // Room doesn't exist
         if(data === undefined || data === null) {
@@ -61,7 +62,7 @@ router.post('/', function(req, res, next) {
         var done = 0;
         for(var i = 0; i < data.usernames.length; ++i) {
             firebase.ref('users/' + data.usernames[i]).once('value', function (snap) {
-                var balance = snap.val().rooms[room.id].balance;
+                var balance = snap.val().rooms[query.id].balance;
                 userData.push({
                     user: data.usernames[i],
                     balance: balance

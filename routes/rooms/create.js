@@ -21,7 +21,7 @@ router.post('/', function(req, res, next) {
     console.log(req.body);
 
     var query = {
-        name: req.body.name,
+        name: req.body.roomName,
         password: req.body.roomPassword
     };
 
@@ -35,13 +35,17 @@ router.post('/', function(req, res, next) {
             usernames: [req.user.username],
             transactions: []
         };
+        console.log(newRoom);
         firebase.ref('rooms/').update(newRoom);
 
         // Add room to user
-        firebase.ref('users/' + req.user.username + '/rooms/' + roomid + '/').update({
+        var newRoomInfo = {};
+        newRoomInfo[roomid] = {
             name: query.name,
             balance: 0
-        });
+        };
+        console.log(newRoomInfo);
+        firebase.ref('users/' + req.user.username + '/rooms/').update(newRoomInfo);
 
         var roomObject = {
             name: query.name,
