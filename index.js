@@ -32,6 +32,16 @@ app.options('/*', function(req, res, next) {
 
 app.use('/', require('./routes'));
 
+app.get('/app', function (req, res, next) {
+    console.log(req.originalUrl);
+    res.redirect('wheel://');
+});
+
+app.get('/app*', function (req, res, next) {
+    console.log(req.originalUrl);
+    res.redirect('wheel:/' + req.originalUrl.slice(4));
+});
+
 app.use(express.static(__dirname + '/client'));
 app.get('/', function(req, res) {
     res.sendFile(path.join(__dirname, './client/index.html'));
