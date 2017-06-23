@@ -20,6 +20,11 @@ var transID = document.getElementById('trans-id');
 var amountInput = document.getElementById('amount');
 var descInput = document.getElementById('desc');
 
+var updateNameBtn = document.getElementById('update-name');
+var updatePwBtn = document.getElementById('update-pass');
+var newNameInput = document.getElementById('new-name');
+var newPwInput = document.getElementById('new-pass');
+
 var authBtn = document.getElementById('auth-btn');
 var logoutBtn = document.getElementById('logout-btn');
 
@@ -122,6 +127,30 @@ leaveBtn.addEventListener('click', function() {
     var params = 'id=' + id;
 
     sendRequest('POST', '/rooms/leave', params, function(res) {
+        resText.innerText = res;
+    });
+});
+
+updateNameBtn.addEventListener('click', function () {
+    var id = roomIDInput.value;
+    var newName = newNameInput.value;
+    var params = 'id=' + id +
+                 '&newName=' + newName;
+
+    sendRequest('POST', '/rooms/update/name', params, function(res) {
+        resText.innerText = res;
+    });
+});
+
+updatePwBtn.addEventListener('click', function () {
+    var id = roomIDInput.value;
+    var oldPw = roomPwInput.value;
+    var newPw = newPwInput.value;
+    var params = 'id=' + id +
+                 '&oldPassword=' + oldPw +
+                 '&newPassword=' + newPw;
+
+    sendRequest('POST', '/rooms/update/password', params, function(res) {
         resText.innerText = res;
     });
 });
