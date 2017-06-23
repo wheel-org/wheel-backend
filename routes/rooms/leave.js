@@ -47,20 +47,24 @@ router.post('/', function(req, res, next) {
         if(index > -1) {
             data.usernames.splice(index, 1);
         }
+        
         if(data.usernames.length <= 0) {
             // Delete room
+            firebase.ref('rooms/' + query.id).set(null);
         }
 
-        // Remove user's transactions from room
-        for(var id in data.transactions) {
-            if(data.transactions.hasOwnProperty(id)) {
-                if(data.transactions[id].username === req.user.username) {
-                    delete data.transactions[id];
+        else {
+            // Remove user's transactions from room
+            for(var id in data.transactions) {
+                if(data.transactions.hasOwnProperty(id)) {
+                    if(data.transactions[id].username === req.user.username) {
+                        delete data.transactions[id];
+                    }
                 }
             }
-        }
 
-        firebase.ref('rooms/' + query.id).set(data);
+            firebase.ref('rooms/' + query.id).set(data);
+        }
 
         res.send({
             success: true,
