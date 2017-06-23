@@ -14,6 +14,7 @@ var roomNameInput = document.getElementById('room-name');
 var roomPwInput = document.getElementById('room-pw');
 
 var postBtn = document.getElementById('post-btn');
+var delTrans = document.getElementById('del-trans');
 var transID = document.getElementById('trans-id');
 var amountInput = document.getElementById('amount');
 var descInput = document.getElementById('desc');
@@ -53,6 +54,18 @@ postBtn.addEventListener('click', function() {
                  '&desc=' + desc;
 
     sendRequest('POST', '/transactions/add', params, function(res) {
+        resText.innerText = res;
+    });
+});
+
+delTrans.addEventListener('click', function() {
+    var rid = roomIDInput.value,
+        tid = transID.value;
+
+    var params = 'roomid=' + rid +
+                 '&transid=' + tid;
+
+    sendRequest('POST', '/transactions/delete', params, function(res) {
         resText.innerText = res;
     });
 });
