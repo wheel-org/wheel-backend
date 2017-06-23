@@ -9,6 +9,7 @@ var loginBtn = document.getElementById('login-btn');
 var createBtn = document.getElementById('create-btn');
 var joinBtn = document.getElementById('join-btn');
 var getBtn = document.getElementById('get-btn');
+var leaveBtn = document.getElementById('leave-btn');
 var roomIDInput = document.getElementById('room-id');
 var roomNameInput = document.getElementById('room-name');
 var roomPwInput = document.getElementById('room-pw');
@@ -45,7 +46,7 @@ function sendRequest(type, url, params, callback){
 
 
 postBtn.addEventListener('click', function() {
-    var id = transID.value,
+    var id = roomIDInput.value,
         amount = amountInput.value,
         desc = descInput.value;
 
@@ -112,6 +113,15 @@ getBtn.addEventListener('click', function() {
     var params = 'id=' + id;
 
     sendRequest('POST', '/rooms/get', params, function(res) {
+        resText.innerText = res;
+    });
+});
+
+leaveBtn.addEventListener('click', function() {
+    var id = roomIDInput.value;
+    var params = 'id=' + id;
+
+    sendRequest('POST', '/rooms/leave', params, function(res) {
         resText.innerText = res;
     });
 });

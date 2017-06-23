@@ -1,6 +1,5 @@
 var router = require("express").Router();
 var firebase = require("../../firebase").database();
-var bcrypt = require("bcryptjs");
 
 router.post('/', function(req, res, next) {
     console.log("Getting room");
@@ -61,7 +60,8 @@ router.post('/', function(req, res, next) {
                                 name: data.name,
                                 id: query.id,
                                 users: userData,
-                                transactions: transactionData
+                                transactions: transactionData,
+                                admin: data.admin
                             }
                         });
                     }

@@ -33,7 +33,8 @@ router.post('/', function(req, res, next) {
             name: query.name,
             password: hashPw,
             usernames: [req.user.username],
-            transactions: []
+            transactions: [],
+            admin: req.user.username
         };
         console.log(newRoom);
         firebase.ref('rooms/').update(newRoom);
@@ -51,7 +52,8 @@ router.post('/', function(req, res, next) {
             name: query.name,
             id: roomid,
             usernames: [req.user.username],
-            transactions: []
+            transactions: [],
+            admin: req.user.username
         };
 
         res.send({

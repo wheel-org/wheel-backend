@@ -77,7 +77,8 @@ router.post('/', function(req, res, next) {
                             name: data.name,
                             id: query.id,
                             users: userData,
-                            transactions: transactionData
+                            transactions: transactionData,
+                            admin: data.admin
                         }
                     });
                 }
