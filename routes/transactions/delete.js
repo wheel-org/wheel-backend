@@ -42,7 +42,7 @@ router.post('/', function(req, res, next) {
         var transaction = data.transactions[query.transid];
         if(transaction.username !== req.user.username) {
             return next({
-                code: 8,
+                code: 10,
                 msg: 'Transaction not made by user'
             });
         }

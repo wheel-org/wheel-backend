@@ -61,33 +61,36 @@ router.post('/', function(req, res, next) {
         var userData = [];
         var done = 0;
         for(var i = 0; i < data.usernames.length; ++i) {
-            firebase.ref('users/' + data.usernames[i]).once('value', function (snap) {
-                var balance = snap.val().rooms[query.id].balance;
-                var name = snap.val().name;
-                userData.push({
-                    user: data.usernames[i],
-                    name: name,
-                    balance: balance
-                });
-                done++;
-                if(done >= data.usernames.length) {
-                    res.send({
-                        success: true,
-                        data: {
-                            name: data.name,
-                            id: query.id,
-                            users: userData,
-                            transactions: transactionData,
-                            admin: data.admin
-                        }
+            (function (i){
+                firebase.ref('users/' + data.usernames[i]).once('value', function (snap) {
+                    var balance = snap.val().rooms[query.id].balance;
+                    var name = snap.val().name;
+
+                    userData.push({
+                        user: data.usernames[i],
+                        name: name,
+                        balance: balance
                     });
-                }
-            }, function (error) {
-                return next({
-                    code: 0,
-                    msg: error
+                    done++;
+                    if(done >= data.usernames.length) {
+                        res.send({
+                            success: true,
+                            data: {
+                                name: data.name,
+                                id: query.id,
+                                users: userData,
+                                transactions: transactionData,
+                                admin: data.admin
+                            }
+                        });
+                    }
+                }, function (error) {
+                    return next({
+                        code: 0,
+                        msg: error
+                    });
                 });
-            });
+            })(i);
         }
     }, function (error) {
         next({
