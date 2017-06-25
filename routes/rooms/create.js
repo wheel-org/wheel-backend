@@ -51,7 +51,13 @@ router.post('/', function(req, res, next) {
         var roomObject = {
             name: query.name,
             id: roomid,
-            usernames: [req.user.username],
+            users: [
+                {
+                    user: req.user.username,
+                    name: req.user.name,
+                    balance: 0
+                }
+            ],
             transactions: [],
             admin: req.user.username
         };
