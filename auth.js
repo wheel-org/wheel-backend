@@ -35,6 +35,11 @@ var isAuth = function (req, res, next) {
         firebase.ref('users/' + query.username).once('value', function(snap) {
             var name = snap.val().name;
             var rooms = snap.val().rooms;
+            var picture = snap.val().picture;
+
+            if(picture === undefined) {
+                picture = '';
+            }
 
             var roomInfo = [];
 
@@ -53,7 +58,8 @@ var isAuth = function (req, res, next) {
             req.user = {
                 username: query.username,
                 name: name,
-                rooms: roomInfo
+                rooms: roomInfo,
+                picture: picture
             };
             next();
         }, function(error) {

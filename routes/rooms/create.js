@@ -55,7 +55,8 @@ router.post('/', function(req, res, next) {
                 {
                     user: req.user.username,
                     name: req.user.name,
-                    balance: 0
+                    balance: 0,
+                    picture: req.user.picture
                 }
             ],
             transactions: [],

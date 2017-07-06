@@ -36,6 +36,11 @@ router.post('/', function(req, res, next) {
         firebase.ref('users/' + query.username).once('value', function(snap) {
             var name = snap.val().name;
             var rooms = snap.val().rooms;
+            var picture = snap.val().picture;
+
+            if(picture === undefined) {
+                picture = '';
+            }
 
             var roomInfo = [];
 
@@ -56,7 +61,8 @@ router.post('/', function(req, res, next) {
             var userObject = {
                 username: query.username,
                 name: name,
-                rooms: roomInfo
+                rooms: roomInfo,
+                picture: picture
             };
             res.send({
                 success: true,

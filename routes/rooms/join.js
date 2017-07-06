@@ -65,11 +65,16 @@ router.post('/', function(req, res, next) {
                 firebase.ref('users/' + data.usernames[i]).once('value', function (snap) {
                     var balance = snap.val().rooms[query.id].balance;
                     var name = snap.val().name;
+                    var picture = snap.val().picture;
 
+                    if(picture === undefined) {
+                        picture = '';
+                    }
                     userData.push({
                         user: data.usernames[i],
                         name: name,
-                        balance: balance
+                        balance: balance,
+                        picture: picture
                     });
                     done++;
                     if(done >= data.usernames.length) {

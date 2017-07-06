@@ -6,6 +6,9 @@ var regNameInput = document.getElementById('reg-name');
 
 var loginBtn = document.getElementById('login-btn');
 
+var pictureBtn = document.getElementById('pic-btn');
+var pictureInput = document.getElementById('pic');
+
 var createBtn = document.getElementById('create-btn');
 var joinBtn = document.getElementById('join-btn');
 var getBtn = document.getElementById('get-btn');
@@ -90,6 +93,16 @@ loginBtn.addEventListener('click', function() {
         resText.innerText = res;
     });
 });
+
+pictureBtn.addEventListener('click', function() {
+    sendRequest('POST', '/picture', 'picture=' + pictureInput.value, function(res) {
+        resText.innerText = res;
+    });
+});
+
+
+var pictureBtn = document.getElementById('pic-btn');
+var pictureInput = document.getElementById('pic');
 
 createBtn.addEventListener('click', function() {
     var name = roomNameInput.value;
