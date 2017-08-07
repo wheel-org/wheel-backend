@@ -6,7 +6,9 @@ var path        = require("path");
 var auth        = require('./auth');
 
 app.use(compression());
-app.use(bodyParser.json());
+app.use(bodyParser.json({
+  limit: '500kb'
+}));
 app.use(bodyParser.urlencoded({
     extended: true
 }));
@@ -49,7 +51,8 @@ app.get('/', function(req, res) {
 });
 
 app.use(function(err, req, res, next) {
-    console.log(err.msg);
+    console.log("Error:");
+    console.log(err);
     res.send({
         success: false,
         data: err.code
